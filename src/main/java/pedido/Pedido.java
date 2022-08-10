@@ -1,5 +1,7 @@
 package pedido;
 
+import produto.Shake;
+
 import java.util.ArrayList;
 
 public class Pedido{
@@ -28,9 +30,12 @@ public class Pedido{
 
     public double calcularTotal(Cardapio cardapio){
         double total= 0;
-        //TODO
+        System.out.println(itens);
+
         return total;
     }
+
+
 
     public void adicionarItemPedido(ItemPedido itemPedidoAdicionado){
         //TODO
