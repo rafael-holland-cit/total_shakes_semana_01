@@ -4,6 +4,7 @@ import ingredientes.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Shake {
     private Base base;
@@ -40,7 +41,8 @@ public class Shake {
     }
 
     public List<Adicional> getAdicionais() {
-        return adicionais;
+        List<Adicional> listaOrdenada = adicionais.stream().sorted().collect(Collectors.toList());
+        return listaOrdenada;
     }
 
     public TipoTamanho getTipoTamanho() {

@@ -1,8 +1,9 @@
 package pedido;
 
+import ingredientes.Adicional;
 import produto.Shake;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class Pedido{
 
@@ -17,6 +18,9 @@ public class Pedido{
     }
 
     public ArrayList<ItemPedido> getItens() {
+        if(itens == null){
+            itens = new ArrayList<>();
+        }
         return itens;
     }
 
@@ -38,7 +42,17 @@ public class Pedido{
 
 
     public void adicionarItemPedido(ItemPedido itemPedidoAdicionado){
-        //TODO
+        int quantidadeInicial = itemPedidoAdicionado.getQuantidade();
+            itens.forEach(item -> {
+                if(item.equals(itemPedidoAdicionado)){
+                    int quantidade = item.getQuantidade() + itemPedidoAdicionado.getQuantidade();
+                    item.setQuantidade(quantidade);
+                }
+            });
+
+            if(quantidadeInicial == itemPedidoAdicionado.getQuantidade()){
+                itens.add(itemPedidoAdicionado);
+            }
     }
 
     public boolean removeItemPedido(ItemPedido itemPedidoRemovido) {
