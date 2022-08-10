@@ -38,12 +38,18 @@ public class Cardapio {
     }
 
     public boolean removerIngrediente(Ingrediente ingrediente){
+        if(precos.remove(ingrediente) == null){
+            throw new IllegalArgumentException("Ingrediente nao existe no cardapio.");
+        }
         precos.remove(ingrediente);
         return true;
     }
 
     public Double buscarPreco(Ingrediente ingrediente){
-        return precos.get(ingrediente.obterTipo());
+        if(precos.get(ingrediente) == null){
+            throw new IllegalArgumentException("Ingrediente nao existe no cardapio.");
+        }
+        return precos.get(ingrediente);
     }
 
     @Override
