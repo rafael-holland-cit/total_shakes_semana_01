@@ -42,27 +42,64 @@ public class Pedido{
 
 
     public void adicionarItemPedido(ItemPedido itemPedidoAdicionado){
-        int quantidadeInicial = itemPedidoAdicionado.getQuantidade();
-            itens.forEach(item -> {
-                if(item.equals(itemPedidoAdicionado)){
-                    int quantidade = item.getQuantidade() + itemPedidoAdicionado.getQuantidade();
-                    item.setQuantidade(quantidade);
-                }
-            });
 
-            if(quantidadeInicial == itemPedidoAdicionado.getQuantidade()){
-                itens.add(itemPedidoAdicionado);
-            }
+           if(encontrarPedido(itemPedidoAdicionado)){
+               ItemPedido pedidoExistente = itens.stream()
+                       .filter(itemPedido -> itemPedido.getShake().equals(itemPedidoAdicionado.getShake()))
+                       .findAny()
+                       .orElseThrow();
+
+               int quantidade = itemPedidoAdicionado.getQuantidade() + pedidoExistente.getQuantidade();
+
+               pedidoExistente.setQuantidade(quantidade);
+           }else{
+               itens.add(itemPedidoAdicionado);
+           }
+
+
+
     }
 
     public boolean removeItemPedido(ItemPedido itemPedidoRemovido) {
-        //substitua o true por uma condição
-        if (true) {
-            //TODO
-        } else {
-            throw new IllegalArgumentException("Item nao existe no pedido.");
-        }
-        return false;
+
+            if (encontrarPedido(itemPedidoRemovido)) {
+
+                ItemPedido pedidoAtualizado = itens.stream()
+                        .filter(itemPedido -> itemPedido.equals(itemPedidoRemovido))
+                        .findAny()
+                        .orElseThrow();
+
+                pedidoAtualizado.setQuantidade(pedidoAtualizado.getQuantidade() - 1);
+
+                if(pedidoAtualizado.getQuantidade() == 0){
+                    this.itens.remove(itemPedidoRemovido);
+                    return true;
+                }
+
+            } else {
+                throw new IllegalArgumentException("Item nao existe no pedido.");
+            }
+
+            return true;
+    }
+
+    private boolean encontrarPedido(ItemPedido pedido){
+        return itens.stream().anyMatch(
+                itemPedido -> itemPedido.getShake().equals(pedido.getShake())
+        );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Pedido)) return false;
+        Pedido pedido = (Pedido) o;
+        return id == pedido.id && Objects.equals(itens, pedido.itens) && Objects.equals(cliente, pedido.cliente);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, itens, cliente);
     }
 
     @Override
