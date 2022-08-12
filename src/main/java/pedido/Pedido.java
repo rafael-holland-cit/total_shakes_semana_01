@@ -5,11 +5,14 @@ import produto.Shake;
 
 import java.util.*;
 
+import static java.util.Map.entry;
+
 public class Pedido{
 
     private int id;
     private  ArrayList<ItemPedido> itens;
     private Cliente cliente;
+
 
     public Pedido(int id, ArrayList<ItemPedido> itens,Cliente cliente){
         this.id = id;
@@ -34,7 +37,19 @@ public class Pedido{
 
     public double calcularTotal(Cardapio cardapio){
         double total= 0;
-        System.out.println(itens);
+        for (ItemPedido item: itens) {
+            var shake = item.getShake();
+            var qtdShake = item.getQuantidade();
+            var adicionais = shake.getAdicionais();
+
+            var precoBase = cardapio.getPrecos().get(shake.getBase());
+            var precoBaseComTamanho = precoBase + (precoBase * shake.getTipoTamanho().multiplicador);
+            var precoComQuantidade = precoBaseComTamanho;
+            var totalAdicionais = adicionais.stream().map(adicional -> cardapio.getPrecos().get(adicional))
+                    .reduce(Double::sum).orElse(0.0);
+
+            total += (precoComQuantidade + totalAdicionais) *  qtdShake;
+        }
 
         return total;
     }
