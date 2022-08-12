@@ -38,14 +38,14 @@ public class Pedido{
     public double calcularTotal(Cardapio cardapio){
         double total= 0;
         for (ItemPedido item: itens) {
-            var shake = item.getShake();
-            var qtdShake = item.getQuantidade();
-            var adicionais = shake.getAdicionais();
+            Shake shake = item.getShake();
+            int qtdShake = item.getQuantidade();
+            List<Adicional> adicionais = shake.getAdicionais();
 
-            var precoBase = cardapio.getPrecos().get(shake.getBase());
-            var precoBaseComTamanho = precoBase + (precoBase * shake.getTipoTamanho().multiplicador);
-            var precoComQuantidade = precoBaseComTamanho;
-            var totalAdicionais = adicionais.stream().map(adicional -> cardapio.getPrecos().get(adicional))
+            Double precoBase = cardapio.getPrecos().get(shake.getBase());
+            double precoBaseComTamanho = precoBase + (precoBase * shake.getTipoTamanho().multiplicador);
+            Double precoComQuantidade = precoBaseComTamanho;
+            Double totalAdicionais = adicionais.stream().map(adicional -> cardapio.getPrecos().get(adicional))
                     .reduce(Double::sum).orElse(0.0);
 
             total += (precoComQuantidade + totalAdicionais) *  qtdShake;
