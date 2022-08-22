@@ -10,7 +10,7 @@ public class Cardapio {
     private TreeMap<Ingrediente,Double> precos;
 
     public Cardapio(){
-        this.precos= new TreeMap<>(Collections.reverseOrder());
+        this.precos= new TreeMap<>();
     }
 
     public TreeMap<Ingrediente, Double> getPrecos(){

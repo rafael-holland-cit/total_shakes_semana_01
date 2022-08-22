@@ -1,14 +1,18 @@
 package pedido;
 
+import ingredientes.Adicional;
 import produto.Shake;
 
-import java.util.ArrayList;
+import java.util.*;
+
+import static java.util.Map.entry;
 
 public class Pedido{
 
     private int id;
     private  ArrayList<ItemPedido> itens;
     private Cliente cliente;
+
 
     public Pedido(int id, ArrayList<ItemPedido> itens,Cliente cliente){
         this.id = id;
@@ -17,6 +21,9 @@ public class Pedido{
     }
 
     public ArrayList<ItemPedido> getItens() {
+        if(itens == null){
+            itens = new ArrayList<>();
+        }
         return itens;
     }
 
@@ -30,7 +37,19 @@ public class Pedido{
 
     public double calcularTotal(Cardapio cardapio){
         double total= 0;
-        System.out.println(itens);
+        for (ItemPedido item: itens) {
+            Shake shake = item.getShake();
+            int qtdShake = item.getQuantidade();
+            List<Adicional> adicionais = shake.getAdicionais();
+
+            Double precoBase = cardapio.getPrecos().get(shake.getBase());
+            double precoBaseComTamanho = precoBase + (precoBase * shake.getTipoTamanho().multiplicador);
+            Double precoComQuantidade = precoBaseComTamanho;
+            Double totalAdicionais = adicionais.stream().map(adicional -> cardapio.getPrecos().get(adicional))
+                    .reduce(Double::sum).orElse(0.0);
+
+            total += (precoComQuantidade + totalAdicionais) *  qtdShake;
+        }
 
         return total;
     }
@@ -38,17 +57,64 @@ public class Pedido{
 
 
     public void adicionarItemPedido(ItemPedido itemPedidoAdicionado){
-        //TODO
+
+           if(encontrarPedido(itemPedidoAdicionado)){
+               ItemPedido pedidoExistente = itens.stream()
+                       .filter(itemPedido -> itemPedido.getShake().equals(itemPedidoAdicionado.getShake()))
+                       .findAny()
+                       .orElseThrow();
+
+               int quantidade = itemPedidoAdicionado.getQuantidade() + pedidoExistente.getQuantidade();
+
+               pedidoExistente.setQuantidade(quantidade);
+           }else{
+               itens.add(itemPedidoAdicionado);
+           }
+
+
+
     }
 
     public boolean removeItemPedido(ItemPedido itemPedidoRemovido) {
-        //substitua o true por uma condição
-        if (true) {
-            //TODO
-        } else {
-            throw new IllegalArgumentException("Item nao existe no pedido.");
-        }
-        return false;
+
+            if (encontrarPedido(itemPedidoRemovido)) {
+
+                ItemPedido pedidoAtualizado = itens.stream()
+                        .filter(itemPedido -> itemPedido.equals(itemPedidoRemovido))
+                        .findAny()
+                        .orElseThrow();
+
+                pedidoAtualizado.setQuantidade(pedidoAtualizado.getQuantidade() - 1);
+
+                if(pedidoAtualizado.getQuantidade() == 0){
+                    this.itens.remove(itemPedidoRemovido);
+                    return true;
+                }
+
+            } else {
+                throw new IllegalArgumentException("Item nao existe no pedido.");
+            }
+
+            return true;
+    }
+
+    private boolean encontrarPedido(ItemPedido pedido){
+        return itens.stream().anyMatch(
+                itemPedido -> itemPedido.getShake().equals(pedido.getShake())
+        );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Pedido)) return false;
+        Pedido pedido = (Pedido) o;
+        return id == pedido.id && Objects.equals(itens, pedido.itens) && Objects.equals(cliente, pedido.cliente);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, itens, cliente);
     }
 
     @Override
